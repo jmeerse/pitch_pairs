@@ -1,0 +1,73 @@
+if (!requireNamespace('devtools', quietly = TRUE)){
+  install.packages('devtools')
+}
+
+devtools::install_github(repo = "BillPetti/baseballr")
+
+install.packages("baseballr")
+
+#install libraries -- use install.packages command (see above) if not installed
+#run library commands each time you start r
+library(baseballr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+#scrape Justin Verlander's 2019 season
+JV2019 <- scrape_statcast_savant_pitcher(start_date = "2019-01-01", end_date = "2019-12-31", pitcherid = 434378)
+
+#look at pitch pairs
+JV2019 <- JV2019 %>% 
+  mutate(next_pitch = lead(JV2019$pitch_type),
+                           next_pitch_x = lead(release_pos_x),
+                           next_pitch_z = lead(release_pos_z)
+  )
+  
+  #eliminate next pitch when changing batters
+JV2019$next_pitch <- if_else(JV2019$batter == lead(JV2019$batter),
+                              lead(JV2019$pitch_type), NULL)
+
+#remove rows with na in next_pitch
+JV2019 <- JV2019 %>% drop_na(next_pitch)
+
+
+#count types of pitches
+count(JV2019, pitch_type)
+
+#2-way table of 2-pitch combos
+with(JV2019, table(pitch_type, next_pitch))
+
+#graph stacked bar chart
+ggplot(JV2019, aes(fill=next_pitch, y=next_pitch, x=pitch_type)) + 
+  geom_bar(position="stack", stat="identity")
+
+
+#remove low frequency pitches 
+JV2019 <- subset(JV2019, pitch_type != '' & pitch_type != 'EP'& pitch_type != 'FC' & next_pitch != '')
+
+#graph better stacked bar chart
+ggplot(JV2019, aes(fill=next_pitch, y=next_pitch, x=pitch_type)) + 
+  geom_bar(position="stack", stat="identity")
+
+#better 2-way table of 2-pitch combos
+with(JV2019, table(pitch_type, next_pitch))
+
+#scatterplot
+ggplot(JV2019, aes(x=release_pos_x, y=release_pos_z)) + geom_point()
+
+#FF SL combo
+JV2019_FFSL <- subset(JV2019, pitch_type == 'FF' & next_pitch == 'SL')
+
+# To overlay scatterplots in R - need to make one list of pitch type, then combine release points
+#try with variables(?) first
+FFSL <- c(JV2019_FFSL$pitch_type, JV2019_FFSL$next_pitch)
+FFSL_x <- c(JV2019_FFSL$release_pos_x, JV2019_FFSL$next_pitch_x)
+FFSL_z <- c(JV2019_FFSL$release_pos_z, JV2019_FFSL$next_pitch_z)
+
+#rewrite JV2019_FFSL to just have release points and types
+JV2019_FFSL <- data.frame(FFSL, FFSL_x, FFSL_z)
+
+#scatterplot of release points colored by pitch_type
+ggplot(JV2019_FFSL, aes(x=FFSL_x, y=FFSL_z, shape=FFSL, color=FFSL)) +
+  geom_point() + xlim(-3,3) + ylim(0,7)
+
