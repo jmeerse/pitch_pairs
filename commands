@@ -13,7 +13,12 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 
-#scrape Justin Verlander's 2019 season
+#look up player id
+JV_id <- playerid_lookup("Verlander", "Justin")
+
+view(JV_id) #find mlbam_id
+
+#scrape Justin Verlander's 2019 season -- enter the id number from above 
 JV2019 <- scrape_statcast_savant_pitcher(start_date = "2019-01-01", end_date = "2019-12-31", pitcherid = 434378)
 
 #look at pitch pairs
