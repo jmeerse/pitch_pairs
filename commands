@@ -19,18 +19,18 @@ JV_id <- playerid_lookup("Verlander", "Justin")
 view(JV_id) #find mlbam_id
 
 #scrape Justin Verlander's 2019 season -- enter the id number from above 
-JV2019 <- scrape_statcast_savant_pitcher(start_date = "2019-01-01", end_date = "2019-12-31", pitcherid = 434378)
+JV2019 <- scrape_statcast_savant_pitcher(start_date = "2019-01-01", end_date = "2019-12-31", pitcherid = ********) #enter id number in place of *******
 
-#look at pitch pairs
+#look at pitch pairs -- create next_pitch variables
 JV2019 <- JV2019 %>% 
-  mutate(next_pitch = lead(JV2019$pitch_type),
-                           next_pitch_x = lead(release_pos_x),
-                           next_pitch_z = lead(release_pos_z)
+  mutate(next_pitch = lag(JV2019$pitch_type),
+                           next_pitch_x = lag(release_pos_x),
+                           next_pitch_z = lag(release_pos_z)
   )
   
   #eliminate next pitch when changing batters
-JV2019$next_pitch <- if_else(JV2019$batter == lead(JV2019$batter),
-                              lead(JV2019$pitch_type), NULL)
+JV2019$next_pitch <- if_else(JV2019$batter == lag(JV2019$batter),
+                              lag(JV2019$pitch_type), NULL)
 
 #remove rows with na in next_pitch
 JV2019 <- JV2019 %>% drop_na(next_pitch)
@@ -48,7 +48,7 @@ ggplot(JV2019, aes(fill=next_pitch, y=next_pitch, x=pitch_type)) +
 
 
 #remove low frequency pitches 
-JV2019 <- subset(JV2019, pitch_type != '' & pitch_type != 'EP'& pitch_type != 'FC' & next_pitch != '')
+JV2019 <- subset(JV2019, pitch_type != '' & pitch_type != 'EP'& pitch_type != 'FC' & next_pitch != '')  #change EP and FC for other pitchers
 
 #graph better stacked bar chart
 ggplot(JV2019, aes(fill=next_pitch, y=next_pitch, x=pitch_type)) + 
