@@ -82,6 +82,14 @@ ggplot(JV2019_FFSL, aes(x=FFSL_x, y=FFSL_z, shape=FFSL, color=FFSL)) +
 
 #################################################################
 #for James
+#if you want to use strikeFX need to rename plate_x and plate_z to px and pz
+# strikeFX info/links below
+# https://www.rdocumentation.org/packages/pitchRx/versions/0.5/topics/strikeFX - strikeFx documentation
+# https://blog.cpsievert.me/2014/04/25/strikezone-plots-made-easy-with-pitchrx/
+# https://pitchrx.cpsievert.me/RJwrapper.pdf - journal article
+# https://pitchrx.cpsievert.me/ -- intro to pitchrx package
+
+
 #getting a bunch of pitchers using their ids - use savant to get ids -- this makes a list of pitcher ids to use in next command
 pitchers <- c(592662, 554430, 543037, 669203, 453286, 592332, 656302, 605400,
               450203, 621111, 605540, 641816, 593423, 605397, 621244, 645261, 608337,
@@ -103,7 +111,7 @@ sos <- filter(so2022, events == "strikeout")
 sos <- filter(sos, pitch_type != "NA") 
 
 
-#defines bar chart of strikeout pitches -- facet_wrap makes graph for each pitcher - take it out for just all pitches combined
+#defines bar chart of strikeout pitches -- facet_wrap makes graph for each pitcher - want to increase space between - take it out for just all pitches combined 
 allpitches <-  sos %>% 
   +   ggplot(aes(x = pitch_type, color = pitch_type)) + 
   +   geom_bar() + facet_wrap(~player_name)
