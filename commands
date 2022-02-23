@@ -90,6 +90,24 @@ ggplot(JV2019_FFSL, aes(x=FFSL_x, y=FFSL_z, shape=FFSL, color=FFSL)) +
 # https://pitchrx.cpsievert.me/ -- intro to pitchrx package
 
 
+#start here
+
+if (!requireNamespace('devtools', quietly = TRUE)){
+  install.packages('devtools')
+}
+
+devtools::install_github(repo = "BillPetti/baseballr")
+
+install.packages("baseballr")
+
+#install libraries -- use install.packages command (see above) if not installed
+#run library commands each time you start r
+library(baseballr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+
 #getting a bunch of pitchers using their ids - use savant to get ids -- this makes a list of pitcher ids to use in next command
 pitchers <- c(592662, 554430, 543037, 669203, 453286, 592332, 656302, 605400,
               450203, 621111, 605540, 641816, 593423, 605397, 621244, 645261, 608337,
